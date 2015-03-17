@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <style type="text/css">
+         p { text-align: center; }
+         html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+         input[type='text'] { font-size: 16px; }
+      </style>
+<script type="text/javascript"
+   src="https://maps.googleapis.com/maps/api/js?sensor=false">
+</script>
+<script type="text/javascript">
+
+var GF_LOCATION = new google.maps.LatLng(56.133208, 10.196376);
+var MOSCONE_LOCATION = new google.maps.LatLng(37.7831, -122.4039);
+var CENTER_DISTANCE = 7500; //meters
+
+var map;
+var markers;
+
+/**
+ * From http://www.movable-type.co.uk/scripts/latlong.html
+ */
+function distance(location1, location2)  {
+	 var r = 6371000; // meters
+	 var p1 = location1.lat() * Math.PI / 180;
+	 var p2 = location2.lat() * Math.PI / 180;
+	 var dp = (location2.lat() - location1.lat()) * Math.PI / 180;
+	 var dl = (location2.lng() - location1.lng()) * Math.PI / 180;
+
+	 var a =
+      Math.sin(dp / 2) * Math.sin(dp / 2) +
+      Math.cos(p1) * Math.cos(p2) *
+      Math.sin(dl / 2) * Math.sin(dl / 2);
+	 var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	 return r * c;
+};
+
+function getTrucks(food) {
+   var result = [];
+   var url = '/trucks';
+   url += '?food=' + encodeURI(food);
+   var xmlhttp = new XMLHttpRequest();
+   xmlhttp.open(
+      "GET",
+      url,
+      false);
+   xmlhttp.send();
+   try {
+      result = JSON.parse(xmlhttp.responseText);
+   } catch (e) {}
+   return result;
+};
+
+/**
+ * Since we only have truck data for San Francisco, use the Moscone Center as the location.
+ * Later, pan to the user's location, if the user is close to the Moscone Center.
+ */
+function handleUserLocation() {
+   if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+         var location = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+         if (distance(location, MOSCONE_LOCATION) <= CENTER_DISTANCE) {
+            map.setZoom(17);
+            map.panTo(location);
+         };
+      });            
+   }
+};
+
+function refreshMarkers() {
+   removeMarkers();
+   var food = document.getElementById('searchText').value;
+   setMarkersForFood(food);
+   return false;
+}
+
+function removeMarkers() {
+   for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+   }
+}
+
+function setMarkersForFood(food) {
+   var trucks = getTrucks(food);
+   setMarkersForTrucks(trucks);
+};
+
+function setMarkersForTrucks(trucks) {
+      
+   //We need to bind to the current marker and truck values
+   var helper = function(marker, truck) {
+      return function(e) {
+         var content = 
+            '<h2>' + truck.applicant + '</h2>' +
+            '<h3>' + truck.address + '</h3>' +
+            '<p>' + truck.fooditems + '</p>'; 
+         infoWindow.setContent(content);
+         infoWindow.open(map, marker);
+      };
+   };
+
+   markers = [];
+
+   var infoWindow = new google.maps.InfoWindow();
+
+   for (var i = 0; i < trucks.length; i++) {
+      var markerOptions = {
+         position: new google.maps.LatLng(trucks[i].latitude, trucks[i].longitude),
+         map: map,
+         title: trucks[i].applicant,
+      };
+      var marker = new google.maps.Marker(markerOptions);
+      marker.setMap(map);
+
+      google.maps.event.addListener(marker, 'click', helper(marker, trucks[i]));
+      markers[i] = marker;
+   };
+};
+
+function initialize() {
+   var mapOptions = {
+  	   center: MOSCONE_LOCATION,
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+   };      
+   map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+
+   handleUserLocation();
+
+   setMarkersForFood('');
+};
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
+   </head>
+   <body>
+      <form onsubmit="return refreshMarkers()">
+         <p>
+            <input id="searchText" type="text" size="40"
+               placeholder='Search for food, f.x. "burgers salads"'/>
+         </p>
+      </form>
+      <div id="map-canvas"></div>
+   </body>
+</html>

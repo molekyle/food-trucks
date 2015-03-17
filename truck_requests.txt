@@ -1,0 +1,4 @@
+curl -G https://data.sfgov.org/resource/rqzj-sfat?status=approved
+curl -G localhost:3000/trucks
+curl -G localhost:3000/trucks?food=salads
+open /Applications/Google\ Chrome.app/ --args --disable-web-security
