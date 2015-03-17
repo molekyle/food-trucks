@@ -1,0 +1,25 @@
+{
+  "name": "food-trucks",
+  "version": "0.1",
+  "description": "A sample Node.js app using Express 4",
+  "main": "trucks_app.js",
+  "scripts": {
+    "start": "node trucks_app.js"
+  },
+  "dependencies": {
+    "express": "~4.12.x"
+  },
+  "engines": {
+    "node": "0.12.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/molekyle/food-trucks"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}

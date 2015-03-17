@@ -1,0 +1,6 @@
+{
+  "name": "SF Food Trucks",
+  "description": "A barebones Node.js app using Express 4",
+  "repository": "https://github.com/molekyle/food-trucks",
+  "keywords": ["node", "express"]
+}
