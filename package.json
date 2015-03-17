@@ -1,6 +1,5 @@
 {
   "name": "food-trucks",
-  "version": "0.1",
   "description": "A sample Node.js app using Express 4",
   "main": "trucks_app.js",
   "scripts": {
