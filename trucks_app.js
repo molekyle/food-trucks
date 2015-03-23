@@ -1,22 +1,10 @@
-function containsAny(s, words) {
-  var result = false;
-
-  for (var i = 0; i < words.length; i++) {
-    if (s.indexOf(words[i]) > 0) {
-      result = true;
-      break;
-    }
-  } 
-  return result;
-};   
-
 function filterTrucks(food, trucks) {
   var result = trucks;
 
   if (food.length > 0) {
     var foodArray = food.toLowerCase().split(' ');
     var filter = function(truck) {
-      return containsAny(truck.fooditems.toLowerCase(), foodArray);
+      return utils.containsAny(truck.fooditems.toLowerCase(), foodArray);
     }
     result = trucks.filter(filter);
   }
@@ -25,6 +13,7 @@ function filterTrucks(food, trucks) {
 
 var https = require('https');
 var express = require('express');
+var utils = require('./string_utils');
 var app = express();
 
 app.use(express.static('public'));
