@@ -18,6 +18,6 @@ Some possible improvements
 
   1. How to refresh the data in the data store? One-shot? With a given frequency, f.x. every hour, by a cron job or timer within Node.js?
 
-  2. Consider caching some of the data outside the datastore in a place with better performance, f.x. RocksDB. Consider how to partition the data to be cached. 
+  2. Consider caching some of the data outside the data store in a place with better performance, f.x. RocksDB. Consider how to partition the data to be cached. 
 
 
